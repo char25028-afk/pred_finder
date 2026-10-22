@@ -10,8 +10,14 @@ import {
   SplitType,
 } from "./predator-data";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+const rawUrl =
+  process.env.NEXT_PUBLIC_SUPABASE_URL ||
+  "https://mxgwlktfjnijgpmfirux.supabase.co";
+const supabaseUrl = rawUrl.replace(/\/rest\/v1\/?$/, "").replace(/\/$/, "");
+
+const supabaseAnonKey =
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+  "sb_publishable_7AwCWs6tdYN8f-ihfn7-WQ_rXEpfLyr";
 
 export const isSupabaseConfigured =
   Boolean(supabaseUrl) &&
@@ -63,9 +69,6 @@ function saveLocalPosts(posts: SightingPost[]) {
   }
 }
 
-/**
- * プレイヤー＆プレデター順位履歴の一覧を取得（Supabase + シードデータ + LocalStorage統合）
- */
 export async function fetchAllPlayers(): Promise<{
   players: PredatorPlayerEntry[];
   source: "supabase" | "local";
@@ -115,12 +118,12 @@ export async function fetchAllPlayers(): Promise<{
           };
         });
 
-        // DB登録データ＋初期シードデータ（重複ID除外）をマージして返す
         const existingNames = new Set(
           dbPlayers.map((d) => d.currentName.toLowerCase())
         );
         const merged = [
           ...dbPlayers,
+          ...localCustom,
           ...INITIAL_PLAYERS.filter(
             (init) => !existingNames.has(init.currentName.toLowerCase())
           ),
@@ -138,9 +141,6 @@ export async function fetchAllPlayers(): Promise<{
   };
 }
 
-/**
- * 新しいプレデター順位・プレイヤー情報をDBへ追加登録
- */
 export async function registerPredatorEntry(input: {
   currentName: string;
   recordedIgn: string;
@@ -186,9 +186,7 @@ export async function registerPredatorEntry(input: {
     xUrl: input.xUrl || undefined,
     twitchUrl: input.twitchUrl || undefined,
     trackerUrl: input.trackerUrl || undefined,
-    bioNote:
-      input.bioNote ||
-      `ユーザー情報提供により登録（S${input.season} #${input.rank}）`,
+    bioNote: input.bioNote || "",
     verifiedCount: 1,
     achievements,
   };
@@ -236,9 +234,6 @@ export async function registerPredatorEntry(input: {
   return newEntry;
 }
 
-/**
- * 掲示板・目撃情報一覧を取得
- */
 export async function fetchSightingsPosts(): Promise<SightingPost[]> {
   const localPosts = loadLocalPosts();
 
@@ -261,7 +256,7 @@ export async function fetchSightingsPosts(): Promise<SightingPost[]> {
           otherBadges: row.other_badges || [],
           legendUsed: row.legend_used || undefined,
           comment: row.comment,
-          authorName: row.author_name || "名無しのレジェンド",
+          authorName: row.author_name || "匿名",
           xUrl: row.x_url || undefined,
           trackerUrl: row.tracker_url || undefined,
           likes: row.likes || 0,
@@ -272,7 +267,7 @@ export async function fetchSightingsPosts(): Promise<SightingPost[]> {
             minute: "2-digit",
           }),
         }));
-        return [...dbPosts, ...INITIAL_SIGHTINGS];
+        return [...dbPosts, ...localPosts, ...INITIAL_SIGHTINGS];
       }
     } catch (err) {
       console.warn("Supabase fetchSightingsPosts fallback:", err);
@@ -282,9 +277,6 @@ export async function fetchSightingsPosts(): Promise<SightingPost[]> {
   return [...localPosts, ...INITIAL_SIGHTINGS];
 }
 
-/**
- * 掲示板に新規投稿を追加
- */
 export async function createSightingPost(input: {
   season: number;
   rank?: number;
@@ -317,7 +309,7 @@ export async function createSightingPost(input: {
     otherBadges: input.otherBadges,
     legendUsed: input.legendUsed || undefined,
     comment: input.comment,
-    authorName: input.authorName?.trim() || "名無しのレジェンド",
+    authorName: input.authorName?.trim() || "匿名",
     xUrl: input.xUrl || undefined,
     trackerUrl: input.trackerUrl || undefined,
     likes: 1,
