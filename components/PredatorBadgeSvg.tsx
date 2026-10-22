@@ -24,8 +24,8 @@ export function PredatorBadgeSvg({
   const px =
     size === "xl" ? 104 : size === "lg" ? 84 : size === "md" ? 64 : 44;
 
-  // s2.png ~ s23.png まで実物画像あり（24以降はs23にフォールバック）
-  const safeSeason = Math.min(Math.max(season, 2), 23);
+  // s2.png ~ s29.png まで対応
+  const safeSeason = Math.min(Math.max(season, 2), 29);
   const imgSrc = `/badges/s${safeSeason}.png`;
 
   return (

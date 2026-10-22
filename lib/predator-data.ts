@@ -56,90 +56,24 @@ export interface SightingPost {
   createdAt: string;
 }
 
-// S17〜S23（順位ナンバー刻印バッジ対象シーズン）
+// S17〜S29（順位ナンバー刻印バッジ対象シーズン：現在S30のためS29まで対応）
 export const NUMBERED_SEASONS: SeasonBadgeMeta[] = [
-  {
-    season: 23,
-    name: "Season 23",
-    jpTitle: "S23",
-    hasSplits: true,
-    hasRankNumber: true,
-    visualFeature: "",
-    frameShape: "rift-halo",
-    accentColor: "#c084fc",
-    secondaryColor: "#ef4444",
-  },
-  {
-    season: 22,
-    name: "Season 22",
-    jpTitle: "S22",
-    hasSplits: true,
-    hasRankNumber: true,
-    visualFeature: "",
-    frameShape: "shock-bolt",
-    accentColor: "#22d3ee",
-    secondaryColor: "#ef4444",
-  },
-  {
-    season: 21,
-    name: "Season 21",
-    jpTitle: "S21",
-    hasSplits: true,
-    hasRankNumber: true,
-    visualFeature: "",
-    frameShape: "void-spike",
-    accentColor: "#a855f7",
-    secondaryColor: "#dc2626",
-  },
-  {
-    season: 20,
-    name: "Season 20",
-    jpTitle: "S20",
-    hasSplits: true,
-    hasRankNumber: true,
-    visualFeature: "",
-    frameShape: "cyber-wing",
-    accentColor: "#f87171",
-    secondaryColor: "#cbd5e1",
-  },
-  {
-    season: 19,
-    name: "Season 19",
-    jpTitle: "S19",
-    hasSplits: false,
-    hasRankNumber: true,
-    visualFeature: "",
-    frameShape: "flame-crown",
-    accentColor: "#fb923c",
-    secondaryColor: "#ef4444",
-  },
-  {
-    season: 18,
-    name: "Season 18",
-    jpTitle: "S18",
-    hasSplits: false,
-    hasRankNumber: true,
-    visualFeature: "",
-    frameShape: "reaper-wing",
-    accentColor: "#dc2626",
-    secondaryColor: "#52525b",
-  },
-  {
-    season: 17,
-    name: "Season 17",
-    jpTitle: "S17",
-    hasSplits: false,
-    hasRankNumber: true,
-    visualFeature: "",
-    frameShape: "hex-fang",
-    accentColor: "#b91c1c",
-    secondaryColor: "#71717a",
-  },
-];
+  29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17,
+].map((season) => ({
+  season,
+  name: `Season ${season}`,
+  jpTitle: `S${season}`,
+  hasSplits: season >= 20,
+  hasRankNumber: true,
+  visualFeature: "",
+  frameShape: "classic" as const,
+  accentColor: "#ef4444",
+  secondaryColor: "#f59e0b",
+}));
 
-// バナーの残り2枠などで「どのシーズンを他に持っているか」で絞り込むためのシーズンリスト
+// バナーの残り2枠などで「どのシーズンを他に持っているか」で絞り込むためのシーズンリスト (S12〜S29)
 export const FILTERABLE_ALL_SEASONS: number[] = [
-  23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12,
+  29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12,
 ];
 
 // 初期シードデータ（PC版中心・実在の有名プレデター構成イメージ＆バナー照合デモ用データ）

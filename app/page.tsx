@@ -296,11 +296,11 @@ export default function PredFinderPage() {
           <>
             {/* 検索パネル：画像と最小限の入力欄のみ */}
             <section className="rounded-2xl bg-zinc-900/80 border border-zinc-800/90 p-4 sm:p-5 space-y-5">
-              {/* 1. メインバッジ画像選択 (S17〜S23) */}
+              {/* 1. メインバッジ画像選択 (S17〜S29) */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-zinc-400">
-                    シーズンバッジ (S17〜S23)
+                    シーズンバッジ (S17〜S29)
                   </span>
                   <button
                     type="button"
