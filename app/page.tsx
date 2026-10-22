@@ -226,13 +226,13 @@ export default function PredFinderPage() {
     <div className="min-h-screen bg-zinc-950 text-zinc-100">
       {/* シンプルヘッダー */}
       <header className="border-b border-zinc-900 bg-zinc-950/90 backdrop-blur sticky top-0 z-30">
-        <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
+        <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
               <img
                 src="/badges/s20.png"
                 alt="Predator"
-                className="w-7 h-7 object-contain"
+                className="w-8 h-8 object-contain"
               />
               <span className="font-black tracking-wider text-base text-white">
                 PRED FINDER
@@ -291,13 +291,13 @@ export default function PredFinderPage() {
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-4 py-6 space-y-6">
+      <main className="max-w-6xl mx-auto px-4 py-6 space-y-6">
         {activeMainTab === "search" ? (
           <>
-            {/* 検索パネル：画像と最小限の入力欄のみ */}
-            <section className="rounded-2xl bg-zinc-900/80 border border-zinc-800/90 p-4 sm:p-5 space-y-5">
-              {/* 1. メインバッジ画像選択 (S17〜S29) */}
-              <div className="space-y-2">
+            {/* 検索パネル：大きなバッジ画像と最小限の入力欄 */}
+            <section className="rounded-2xl bg-zinc-900/80 border border-zinc-800/90 p-4 sm:p-6 space-y-6">
+              {/* 1. メインバッジ画像選択 (S17〜S29 特大サイズ) */}
+              <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-zinc-400">
                     シーズンバッジ (S17〜S29)
@@ -305,7 +305,7 @@ export default function PredFinderPage() {
                   <button
                     type="button"
                     onClick={() => setSelectedSeason("all")}
-                    className={`px-2.5 py-1 rounded-md text-xs font-mono font-bold transition cursor-pointer ${
+                    className={`px-3 py-1 rounded-lg text-xs font-mono font-bold transition cursor-pointer ${
                       selectedSeason === "all"
                         ? "bg-red-600 text-white"
                         : "bg-zinc-800 text-zinc-400 hover:text-white"
@@ -315,7 +315,7 @@ export default function PredFinderPage() {
                   </button>
                 </div>
 
-                <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
+                <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-3">
                   {NUMBERED_SEASONS.map((sMeta) => {
                     const isSelected = selectedSeason === sMeta.season;
                     return (
@@ -327,17 +327,17 @@ export default function PredFinderPage() {
                             isSelected ? "all" : sMeta.season
                           )
                         }
-                        className={`rounded-xl py-2.5 px-1 border flex flex-col items-center justify-center transition cursor-pointer ${
+                        className={`rounded-2xl py-3 px-2 border flex flex-col items-center justify-center transition cursor-pointer ${
                           isSelected
-                            ? "bg-red-950/60 border-red-500 ring-1 ring-red-500"
-                            : "bg-zinc-950/70 border-zinc-800/80 hover:border-zinc-700"
+                            ? "bg-red-950/60 border-red-500 ring-2 ring-red-500/70 shadow-lg shadow-red-950/50"
+                            : "bg-zinc-950/80 border-zinc-800/80 hover:border-zinc-600 hover:bg-zinc-900"
                         }`}
                       >
                         <PredatorBadgeSvg
                           season={sMeta.season}
                           rank={isSelected && rankInput ? rankInput : undefined}
                           splitType={splitFilter === "single" ? "split1" : "both"}
-                          size="md"
+                          size="xl"
                           selected={isSelected}
                           showSeasonLabel
                         />
@@ -437,12 +437,12 @@ export default function PredFinderPage() {
                 </div>
               </div>
 
-              {/* 3. 他シーズン所持絞り込み（小さな実物バッジアイコン） */}
-              <div className="pt-3 border-t border-zinc-800/70 flex flex-wrap items-center gap-2">
-                <span className="text-xs font-bold text-zinc-400 mr-1">
-                  他枠バッジ絞り込み:
+              {/* 3. 他シーズン所持絞り込み（見やすい大きめの実物バッジアイコン） */}
+              <div className="pt-4 border-t border-zinc-800/70 space-y-2">
+                <span className="text-xs font-bold text-zinc-400 block">
+                  他枠バッジ絞り込み (S12〜S29)
                 </span>
-                <div className="flex flex-wrap gap-1.5">
+                <div className="grid grid-cols-6 sm:grid-cols-9 gap-2">
                   {FILTERABLE_ALL_SEASONS.map((sNum) => {
                     const active = requiredOtherSeasons.includes(sNum);
                     return (
@@ -450,16 +450,16 @@ export default function PredFinderPage() {
                         key={sNum}
                         type="button"
                         onClick={() => toggleOtherSeason(sNum)}
-                        className={`px-2 py-1 rounded-lg border flex items-center gap-1.5 transition cursor-pointer ${
+                        className={`p-2 rounded-xl border flex flex-col items-center gap-1 transition cursor-pointer ${
                           active
-                            ? "bg-amber-500/20 border-amber-400 text-amber-200"
-                            : "bg-zinc-950 border-zinc-800/90 text-zinc-400 hover:border-zinc-700"
+                            ? "bg-amber-500/20 border-amber-400 text-amber-200 ring-1 ring-amber-400"
+                            : "bg-zinc-950 border-zinc-800/90 text-zinc-400 hover:border-zinc-600"
                         }`}
                       >
                         <img
                           src={`/badges/s${sNum}.png`}
                           alt={`S${sNum}`}
-                          className="w-4 h-4 object-contain"
+                          className="w-12 h-12 object-contain"
                         />
                         <span className="text-xs font-mono font-bold">
                           S{sNum}
@@ -594,7 +594,7 @@ export default function PredFinderPage() {
                                 season={ach.season}
                                 rank={ach.rank}
                                 splitType={ach.splitType}
-                                size="sm"
+                                size="md"
                               />
                               <span className="mt-1.5 text-[10px] font-mono font-bold text-zinc-300">
                                 S{ach.season}
