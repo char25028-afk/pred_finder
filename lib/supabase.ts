@@ -75,16 +75,32 @@ export async function fetchAllPlayers(): Promise<{
 }> {
   const localCustom = loadLocalPlayers();
 
+  // 1. S17〜S29 全シーズン750位アーカイブJSONの読み込み
+  let archivePlayers: PredatorPlayerEntry[] = [];
+  if (typeof window !== "undefined") {
+    try {
+      const res = await fetch("/data/predators_s17_s29.json");
+      if (res.ok) {
+        archivePlayers = await res.json();
+      }
+    } catch (e) {
+      console.warn("Archive JSON load warning:", e);
+    }
+  }
+
+  // 2. Supabase クラウドDBの追加登録データを取得してマージ
   if (supabase) {
     try {
       const { data: playersRows, error: pErr } = await supabase
         .from("players")
         .select("*")
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
+        .limit(500);
 
       const { data: recordsRows, error: rErr } = await supabase
         .from("predator_records")
-        .select("*");
+        .select("*")
+        .limit(2000);
 
       if (!pErr && !rErr && playersRows) {
         const dbPlayers: PredatorPlayerEntry[] = playersRows.map((p) => {
@@ -118,17 +134,10 @@ export async function fetchAllPlayers(): Promise<{
           };
         });
 
-        const existingNames = new Set(
-          dbPlayers.map((d) => d.currentName.toLowerCase())
-        );
-        const merged = [
-          ...dbPlayers,
-          ...localCustom,
-          ...INITIAL_PLAYERS.filter(
-            (init) => !existingNames.has(init.currentName.toLowerCase())
-          ),
-        ];
-        return { players: merged, source: "supabase" };
+        return {
+          players: [...dbPlayers, ...localCustom, ...archivePlayers],
+          source: "supabase",
+        };
       }
     } catch (err) {
       console.warn("Supabase fetchAllPlayers fallback:", err);
@@ -136,7 +145,10 @@ export async function fetchAllPlayers(): Promise<{
   }
 
   return {
-    players: [...localCustom, ...INITIAL_PLAYERS],
+    players: [
+      ...localCustom,
+      ...(archivePlayers.length > 0 ? archivePlayers : INITIAL_PLAYERS),
+    ],
     source: "local",
   };
 }

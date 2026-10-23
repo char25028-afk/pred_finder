@@ -49,6 +49,7 @@ export default function PredFinderPage() {
   const [boardTab, setBoardTab] = useState<"all" | PostType>("all");
   const [showRegisterModal, setShowRegisterModal] = useState<boolean>(false);
   const [showPostModal, setShowPostModal] = useState<boolean>(false);
+  const [displayLimit, setDisplayLimit] = useState<number>(40);
 
   // 掲示板投稿ステート
   const [postSeason, setPostSeason] = useState<number>(20);
@@ -513,99 +514,115 @@ export default function PredFinderPage() {
                   </div>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {matchedPlayers.map((player) => (
-                    <div
-                      key={player.id}
-                      className="rounded-2xl bg-zinc-900/90 border border-zinc-800 hover:border-zinc-700 p-4 flex flex-col justify-between gap-4 transition"
-                    >
-                      {/* プレイヤー名 ＆ リンクボタン */}
-                      <div className="flex items-start justify-between gap-2">
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <h3 className="text-base font-black text-white">
-                              {player.currentName}
-                            </h3>
-                            <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-zinc-800 text-zinc-300">
-                              {player.inputDevice}
-                            </span>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {matchedPlayers.slice(0, displayLimit).map((player) => (
+                      <div
+                        key={player.id}
+                        className="rounded-2xl bg-zinc-900/90 border border-zinc-800 hover:border-zinc-700 p-4 flex flex-col justify-between gap-4 transition"
+                      >
+                        {/* プレイヤー名 ＆ リンクボタン */}
+                        <div className="flex items-start justify-between gap-2">
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <h3 className="text-base font-black text-white">
+                                {player.currentName}
+                              </h3>
+                              {player.inputDevice !== "Unknown" && (
+                                <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-zinc-800 text-zinc-300">
+                                  {player.inputDevice}
+                                </span>
+                              )}
+                            </div>
+                            {player.aliases.length > 0 && (
+                              <div className="text-xs text-zinc-400 font-mono mt-0.5">
+                                別名義: {player.aliases.join(" / ")}
+                              </div>
+                            )}
                           </div>
-                          {player.aliases.length > 0 && (
-                            <div className="text-xs text-zinc-400 font-mono mt-0.5">
-                              別名義: {player.aliases.join(" / ")}
-                            </div>
-                          )}
+
+                          <div className="flex items-center gap-1.5">
+                            {player.trackerUrl && (
+                              <a
+                                href={player.trackerUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="px-2.5 py-1 rounded-lg text-xs font-bold bg-red-600/20 hover:bg-red-600/30 text-red-300 border border-red-500/30 inline-flex items-center gap-1"
+                              >
+                                <span>Tracker</span>
+                                <ExternalLink className="w-3 h-3" />
+                              </a>
+                            )}
+                            {player.xUrl && (
+                              <a
+                                href={player.xUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="px-2.5 py-1 rounded-lg text-xs font-bold bg-zinc-800 hover:bg-zinc-700 text-zinc-200"
+                              >
+                                𝕏
+                              </a>
+                            )}
+                            {player.twitchUrl && (
+                              <a
+                                href={player.twitchUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="px-2.5 py-1 rounded-lg text-xs font-bold bg-purple-950/70 hover:bg-purple-900/70 text-purple-300 border border-purple-700/40"
+                              >
+                                Twitch
+                              </a>
+                            )}
+                          </div>
                         </div>
 
-                        <div className="flex items-center gap-1.5">
-                          {player.trackerUrl && (
-                            <a
-                              href={player.trackerUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="px-2.5 py-1 rounded-lg text-xs font-bold bg-red-600/20 hover:bg-red-600/30 text-red-300 border border-red-500/30 inline-flex items-center gap-1"
-                            >
-                              <span>Tracker</span>
-                              <ExternalLink className="w-3 h-3" />
-                            </a>
-                          )}
-                          {player.xUrl && (
-                            <a
-                              href={player.xUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="px-2.5 py-1 rounded-lg text-xs font-bold bg-zinc-800 hover:bg-zinc-700 text-zinc-200"
-                            >
-                              𝕏
-                            </a>
-                          )}
-                          {player.twitchUrl && (
-                            <a
-                              href={player.twitchUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="px-2.5 py-1 rounded-lg text-xs font-bold bg-purple-950/70 hover:bg-purple-900/70 text-purple-300 border border-purple-700/40"
-                            >
-                              Twitch
-                            </a>
-                          )}
+                        {/* 所持プレデターバッジ画像一覧（一目でバナーと照合できる） */}
+                        <div className="flex flex-wrap items-center gap-2.5 pt-2 border-t border-zinc-800/70">
+                          {player.achievements.map((ach, idx) => {
+                            const isTarget =
+                              (selectedSeason !== "all" &&
+                                ach.season === selectedSeason) ||
+                              requiredOtherSeasons.includes(ach.season);
+
+                            return (
+                              <div
+                                key={`${ach.season}-${idx}`}
+                                className={`rounded-xl p-1.5 border flex flex-col items-center min-w-[58px] ${
+                                  isTarget
+                                    ? "bg-red-950/40 border-red-500"
+                                    : "bg-zinc-950/70 border-zinc-800/80"
+                                }`}
+                                title={`当時の名前: ${ach.recordedIgn}`}
+                              >
+                                <PredatorBadgeSvg
+                                  season={ach.season}
+                                  rank={ach.rank}
+                                  splitType={ach.splitType}
+                                  size="md"
+                                />
+                                <span className="mt-1.5 text-[10px] font-mono font-bold text-zinc-300">
+                                  S{ach.season}
+                                  {ach.splitType === "both" ? "✨" : ""}
+                                </span>
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
+                    ))}
+                  </div>
 
-                      {/* 所持プレデターバッジ画像一覧（一目でバナーと照合できる） */}
-                      <div className="flex flex-wrap items-center gap-2.5 pt-2 border-t border-zinc-800/70">
-                        {player.achievements.map((ach, idx) => {
-                          const isTarget =
-                            (selectedSeason !== "all" &&
-                              ach.season === selectedSeason) ||
-                            requiredOtherSeasons.includes(ach.season);
-
-                          return (
-                            <div
-                              key={`${ach.season}-${idx}`}
-                              className={`rounded-xl p-1.5 border flex flex-col items-center min-w-[58px] ${
-                                isTarget
-                                  ? "bg-red-950/40 border-red-500"
-                                  : "bg-zinc-950/70 border-zinc-800/80"
-                              }`}
-                              title={`当時の名前: ${ach.recordedIgn}`}
-                            >
-                              <PredatorBadgeSvg
-                                season={ach.season}
-                                rank={ach.rank}
-                                splitType={ach.splitType}
-                                size="md"
-                              />
-                              <span className="mt-1.5 text-[10px] font-mono font-bold text-zinc-300">
-                                S{ach.season}
-                                {ach.splitType === "both" ? "✨" : ""}
-                              </span>
-                            </div>
-                          );
-                        })}
-                      </div>
+                  {matchedPlayers.length > displayLimit && (
+                    <div className="text-center pt-2">
+                      <button
+                        type="button"
+                        onClick={() => setDisplayLimit((prev) => prev + 60)}
+                        className="px-5 py-2.5 rounded-xl text-xs font-bold bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-200 cursor-pointer"
+                      >
+                        もっと表示する（残り {matchedPlayers.length - displayLimit} 件）
+                      </button>
                     </div>
-                  ))}
+                  )}
                 </div>
               )}
             </section>
